@@ -17,35 +17,61 @@ import java.text.DecimalFormat;
  
 /** Custom Drawing Code Template */
 // A Swing application extends javax.swing.JFrame
-public class Draw extends JFrame {
-    // Define constants
-    public int temp;
+//public class Draw extends JFrame {
+//    // Define constants
+//
+//    // Declare an instance of the drawing canvas,
+//    // which is an inner class called DrawCanvas extending javax.swing.JPanel.
+//    private DrawCanvas canvas;
+// 
+//    // Constructor to set up the GUI components and event handlers
+//    public Draw() {
+//    }
+//    public void init(){
+//        canvas = new DrawCanvas();    // Construct the drawing canvas
+//        canvas.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
+// 
+//        // Set the Drawing JPanel as the JFrame's content-pane
+//        Container cp = getContentPane();
+//        cp.add(canvas);
+//        // or "setContentPane(canvas);"
+// 
+//        setDefaultCloseOperation(EXIT_ON_CLOSE);   // Handle the CLOSE button
+//        pack();              // Either pack() the components; or setSize()
+//        setTitle("Simulated Annealing");  // "super" JFrame sets the title
+//        setVisible(true);    // "super" JFrame show
+//    }
+
+ 
+   /**
+    * Define inner class DrawCanvas, which is a JPanel used for custom drawing.
+    */
+    public class Draw extends JPanel {
+            public int temp;
     public double cycles;
     public static final int CANVAS_WIDTH  = 900;
     public static final int CANVAS_HEIGHT = 500;
 
-    // Declare an instance of the drawing canvas,
-    // which is an inner class called DrawCanvas extending javax.swing.JPanel.
-    private DrawCanvas canvas;
- 
-    // Constructor to set up the GUI components and event handlers
-    public Draw() {
-    }
-    public void init(){
-        canvas = new DrawCanvas();    // Construct the drawing canvas
-        canvas.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
- 
-        // Set the Drawing JPanel as the JFrame's content-pane
-        Container cp = getContentPane();
-        cp.add(canvas);
-        // or "setContentPane(canvas);"
- 
-        setDefaultCloseOperation(EXIT_ON_CLOSE);   // Handle the CLOSE button
-        pack();              // Either pack() the components; or setSize()
-        setTitle("Simulated Annealing");  // "super" JFrame sets the title
-        setVisible(true);    // "super" JFrame show
-    }
-    public void drawBox(int range, Graphics g){
+        // Override paintComponent to perform your own painting
+        @Override
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);     // paint parent's background
+            setBackground(Color.WHITE);  // set background color for this JPanel
+            
+            if (SimulatedAnnealing.currentSolution == null) {
+                g.setFont(new Font("Monospaced", Font.PLAIN, 20));
+                g.drawString("Not Initialized", 30,30);
+                return;
+            }
+
+            int range = Math.min(getWidth(), getHeight());
+            int radius = 5*range/600;
+            drawBox(range, g);
+            drawCities(radius, range,g);
+            drawTour(range, g);
+            drawText(range, g);
+        }
+            public void drawBox(int range, Graphics g){
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, range , range );
         g.setColor(Color.WHITE);
@@ -100,23 +126,5 @@ public class Draw extends JFrame {
         g.drawString("Number of Cities: " + SimulatedAnnealing.cityCount, range,210);
         g.drawString("Start Temperature: " + SimulatedAnnealing.startTemp, range,230);
         g.drawString("Cooling Rate: " + SimulatedAnnealing.coolingRate, range,250);
-    }
- 
-   /**
-    * Define inner class DrawCanvas, which is a JPanel used for custom drawing.
-    */
-    private class DrawCanvas extends JPanel {
-        // Override paintComponent to perform your own painting
-        @Override
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);     // paint parent's background
-            setBackground(Color.WHITE);  // set background color for this JPanel
-            int range = Math.min(getWidth(), getHeight());
-            int radius = 5*range/600;
-            drawBox(range, g);
-            drawCities(radius, range,g);
-            drawTour(range, g);
-            drawText(range, g);
-        }
     }
 }

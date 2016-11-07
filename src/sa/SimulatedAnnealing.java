@@ -2,9 +2,12 @@ package sa;
 
 
 
+import java.lang.reflect.InvocationTargetException;
 import javax.swing.*;
 
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 public class SimulatedAnnealing{
     
     //******************************
@@ -21,13 +24,13 @@ public class SimulatedAnnealing{
     public static double temp;
     public static double startTemp = 1000000;
     // Cooling rate
-    public static double coolingRate = 0.0000005;
+    public static double coolingRate = 0.000005;
     public static double secondsLeft;
     public static double cyclesLeft;
     
     public static int minimum = 5;
     public static int maximum = 200;
-    public static int cityCount = 30;
+    public static int cityCount = 20;
     
     // Calculate the acceptance probability
     public static double acceptanceProbability(int energy, int newEnergy, double temperature) {
@@ -48,14 +51,32 @@ public class SimulatedAnnealing{
     }
     
     public static void main(String[] args) {
-        final Draw draw = new Draw();
-        SwingUtilities.invokeLater(new Runnable() {
-        @Override
-         public void run() {
-            //draw = new Draw(); // Let the constructor do the job
-            draw.init();
-        }
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                final TourGui tourGui = new TourGui();
+                //EjE tourGui.draw.init();
+                tourGui.setVisible(true);
+                
+                // EjE: Run runAnneal on background thread
+                new Thread(new Runnable() {
+                    @Override public void run() {
+                        SimulatedAnnealing.runAnneal(tourGui);
+                    }
+                }).start();
+
+                //SimulatedAnnealing.runAnneal(tourGui);
+            }
         });
+    }
+//        final Draw draw = new Draw();
+//        SwingUtilities.invokeLater(new Runnable() {
+//        @Override
+//         public void run() {
+//            //draw = new Draw(); // Let the constructor do the job
+//            draw.init();
+//        }
+//        });
+    static private void runAnneal(final TourGui tourGui) {
         double startTime = 0;
         double endTime = 0;
         
@@ -73,8 +94,10 @@ public class SimulatedAnnealing{
             best = new Tour(currentSolution.getTour());
             
             startTime = System.nanoTime();
+            
             // Loop until system has cooled
             while (temp > 1) {
+                boolean bRepaint = false;
                 
                 cyclesLeft = (-Math.log10(temp*1.0000005))/Math.log10(1-coolingRate);
 
@@ -84,6 +107,8 @@ public class SimulatedAnnealing{
                     double spmil = (endTime -startTime)/1000000000;
 
                     secondsLeft = (spmil/cycles)*cyclesLeft;
+                    
+                    bRepaint = true;
                 }
                 // Create new neighbour tour
                 Tour newSolution = new Tour(currentSolution.getTour());
@@ -114,13 +139,26 @@ public class SimulatedAnnealing{
                     best = new Tour(currentSolution.getTour());
                    // draw.bestDist = best.getDistance();
                     //draw.repaint();
+                    bRepaint = true;
                 }
 
                 // Cool system
                 temp *= 1-coolingRate;
-                draw.temp = (int) temp;
-                draw.cycles = cycles;
-                draw.repaint();
+                tourGui.draw.temp = (int) temp;
+                tourGui.draw.cycles = cycles;
+                
+                //EjE Must paint on main? thread (see below). tourGui.getContentPane().repaint();
+                if (bRepaint) {
+                    try {                
+                        java.awt.EventQueue.invokeAndWait(new Runnable() {
+                            public void run() {
+                                tourGui.getContentPane().repaint();
+                            }
+                        });
+                    } catch (Exception ex) {
+                        Logger.getLogger(SimulatedAnnealing.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }                
                 cycles ++;
             }
             secondsLeft = 0.0;

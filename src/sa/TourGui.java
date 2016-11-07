@@ -29,6 +29,7 @@ public class TourGui extends javax.swing.JFrame {
 
         jTabbedPane = new javax.swing.JTabbedPane();
         TourPanel = new javax.swing.JPanel();
+        draw = new sa.Draw();
         SettingsPanel = new javax.swing.JPanel();
         SeedLabel = new javax.swing.JLabel();
         SeedTextField = new javax.swing.JTextField();
@@ -46,16 +47,20 @@ public class TourGui extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        javax.swing.GroupLayout TourPanelLayout = new javax.swing.GroupLayout(TourPanel);
-        TourPanel.setLayout(TourPanelLayout);
-        TourPanelLayout.setHorizontalGroup(
-            TourPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 895, Short.MAX_VALUE)
+        TourPanel.setLayout(new java.awt.BorderLayout());
+
+        javax.swing.GroupLayout drawLayout = new javax.swing.GroupLayout(draw);
+        draw.setLayout(drawLayout);
+        drawLayout.setHorizontalGroup(
+            drawLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 934, Short.MAX_VALUE)
         );
-        TourPanelLayout.setVerticalGroup(
-            TourPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 472, Short.MAX_VALUE)
+        drawLayout.setVerticalGroup(
+            drawLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 484, Short.MAX_VALUE)
         );
+
+        TourPanel.add(draw, java.awt.BorderLayout.CENTER);
 
         jTabbedPane.addTab("Tour", TourPanel);
 
@@ -229,6 +234,7 @@ public class TourGui extends javax.swing.JFrame {
     private javax.swing.JTextField StartTempField;
     private javax.swing.JLabel StartTempLabel;
     private javax.swing.JPanel TourPanel;
+    public sa.Draw draw;
     private javax.swing.JTabbedPane jTabbedPane;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
